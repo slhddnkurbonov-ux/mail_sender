@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS  # 1. Import CORS
 
 app = Flask(__name__)
-CORS(app)  # 2. Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "https://flyup.uz"}})
 
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 
