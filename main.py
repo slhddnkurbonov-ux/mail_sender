@@ -1,53 +1,41 @@
-import smtplib
-from email.message import EmailMessage
 import os
+import requests
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # 1. Import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://flyup.uz"}})
 
-SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+TO_EMAIL = os.getenv("TO_EMAIL")
+FROM_EMAIL = os.getenv("FROM_EMAIL") 
 
 @app.route('/send-email', methods=['POST'])
 def send_email():
     data = request.get_json()
-    
     if not data:
         return jsonify({"error": "Invalid or missing JSON payload"}), 400
 
-    to_email = os.getenv("TO_EMAIL")
     subject = data.get('subject')
     body = data.get('body')
+    if not all([subject, body]):
+        return jsonify({"error": "Missing required fields"}), 400
 
-    if not all([ subject, body]):
-        return jsonify({"error": "Missing required fields: 'subject', or 'body'"}), 400
+    response = requests.post(
+        "https://api.resend.com/emails",
+        headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+        json={
+            "from": FROM_EMAIL,
+            "to": [TO_EMAIL],
+            "subject": subject,
+            "text": body
+        }
+    )
 
-    # Ensure you are using your NEW App Password here!
-    sender_password = os.getenv("SENDER_PASSWORD") 
-    
-    if not sender_password:
-        return jsonify({"error": "Server misconfiguration: EMAIL_APP_PASSWORD is not set"}), 500
+    if response.status_code >= 400:
+        return jsonify({"error": "Failed to send email", "details": response.text}), 502
 
-    msg = EmailMessage()
-    msg.set_content(body)
-    msg['Subject'] = subject
-    msg['From'] = SENDER_EMAIL
-    msg['To'] = to_email
-
-    try:
-        print(f"Connecting to SMTP server to send email to {to_email}...")
-        
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(SENDER_EMAIL, sender_password)
-            server.send_message(msg)
-            
-        print("Email sent successfully!")
-        return jsonify({"message": f"Email successfully sent"}), 200
-        
-    except smtplib.SMTPAuthenticationError:
-        return jsonify({"error": "SMTP Authentication failed."}), 401
-
+    return jsonify({"message": "Email successfully sent"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
