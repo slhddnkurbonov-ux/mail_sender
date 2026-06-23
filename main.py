@@ -66,7 +66,7 @@ def send_email():
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 20px;">
       <div style="background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
         <h2 style="color: #1a1a1a; margin-top: 0; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">
-          New Inquiry — FlyUP Tashkent
+          New Inquiry — FlyUP
         </h2>
         <table style="width: 100%; font-size: 15px; color: #333333; border-collapse: collapse;">
           <tr>
