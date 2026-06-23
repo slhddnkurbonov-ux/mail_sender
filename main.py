@@ -92,7 +92,7 @@ def send_email():
         <p style="color: #333333; font-size: 15px; line-height: 1.6; white-space: pre-line;">{message}</p>
         <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;">
         <p style="color: #999999; font-size: 12px;">
-          Sent automatically from the FlyUP Tashkent contact form.
+          Sent automatically from the flyup.uz contact form.
         </p>
       </div>
     </div>
